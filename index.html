@@ -1,114 +1,60 @@
-
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ranking Equipos</title>
+  <meta charset="UTF-8">
+  <title>Ranking Colombia y Argentina</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
-      background: url('wallstreet-bg.jpg') no-repeat center center fixed;
+      background-image: url('wallstreet-bg.jpg');
       background-size: cover;
       font-family: Arial, sans-serif;
       color: white;
-      overflow: hidden;
+      text-align: center;
     }
     .container {
-      text-align: center;
-      margin-top: 40px;
-      position: relative;
-      z-index: 2;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-top: 100px;
     }
-    .team-box {
-      display: inline-block;
+    .card {
       background: rgba(0, 0, 0, 0.7);
-      padding: 15px 30px;
       border-radius: 20px;
-      margin: 20px;
-      box-shadow: 0 0 20px #000;
-    }
-    .team-title {
-      font-size: 28px;
-      font-weight: bold;
-      background: linear-gradient(to right, yellow, white);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      padding: 20px;
+      width: 300px;
+      box-shadow: 0 0 10px black;
     }
     .total {
-      margin-top: 10px;
-      font-size: 24px;
+      font-size: 40px;
+      margin: 10px 0;
       background: green;
-      border-radius: 25px;
+      border-radius: 10px;
       padding: 10px;
-    }
-    .money {
-      position: absolute;
-      width: 40px;
-      animation: fall linear infinite;
-    }
-    @keyframes fall {
-      0% {
-        top: -50px;
-        opacity: 1;
-        transform: rotate(0deg);
-      }
-      100% {
-        top: 100vh;
-        opacity: 0;
-        transform: rotate(360deg);
-      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="team-box">
-      <div class="team-title">🇨🇴 TEAM COLOMBIA 🇨🇴</div>
-      <div class="total" id="colombiaTotal">$ 0.00</div>
+    <div class="card">
+      <h2>🇨🇴 TEAM COLOMBIA 🇨🇴</h2>
+      <div class="total" id="colombia-total">$ 0.00</div>
     </div>
-    <div class="team-box">
-      <div class="team-title">🇦🇷 TEAM ARGENTINA 🇦🇷</div>
-      <div class="total" id="argentinaTotal">$ 0.00</div>
+    <div class="card">
+      <h2>🇦🇷 TEAM ARGENTINA 🇦🇷</h2>
+      <div class="total" id="argentina-total">$ 0.00</div>
     </div>
   </div>
 
   <script>
-    const sheetURL = "https://script.google.com/macros/s/AKfycbzQZ-nWO5fdrPjdR3y0XWptz9O56BovO9WHS57dvBvKhhXql9JrdG7Ej5bOnWObPAIF/exec";
-
-    async function fetchData() {
-      try {
-        const res = await fetch(sheetURL);
-        const data = await res.json();
-
-        const totalColombia = data.rankingColombia.reduce((acc, p) => acc + p.sales, 0);
-        const totalArgentina = data.rankingArgentina.reduce((acc, p) => acc + p.sales, 0);
-
-        document.getElementById("colombiaTotal").textContent = "$ " + totalColombia.toFixed(2);
-        document.getElementById("argentinaTotal").textContent = "$ " + totalArgentina.toFixed(2);
-      } catch (e) {
-        console.error("Error al cargar los datos", e);
-      }
-    }
-
-    fetchData();
-    setInterval(fetchData, 10000); // cada 10 segundos
-
-    // Billetes
-    function createMoney() {
-      const money = document.createElement("img");
-      money.src = "money.png";
-      money.classList.add("money");
-      money.style.left = Math.random() * 100 + "vw";
-      money.style.animationDuration = 3 + Math.random() * 2 + "s";
-      document.body.appendChild(money);
-
-      setTimeout(() => {
-        money.remove();
-      }, 5000);
-    }
-    setInterval(createMoney, 300);
+    fetch("AQUÍ_TU_URL_DEL_SCRIPT")
+      .then(response => response.json())
+      .then(data => {
+        const totalColombia = data.rankingColombia.reduce((sum, entry) => sum + entry.sales, 0);
+        const totalArgentina = data.rankingArgentina.reduce((sum, entry) => sum + entry.sales, 0);
+        document.getElementById("colombia-total").textContent = `$ ${totalColombia.toLocaleString()}`;
+        document.getElementById("argentina-total").textContent = `$ ${totalArgentina.toLocaleString()}`;
+      });
   </script>
 </body>
 </html>
