@@ -45,7 +45,7 @@
       margin: 0;
     }
     .ranking-list li {
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       font-weight: bold;
       margin: 8px 0;
       display: flex;
@@ -83,6 +83,14 @@
       0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
       100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
     }
+
+    /* 🥇 Estilos para el top 1 y top 2 */
+    .first-place {
+      color: gold;
+    }
+    .second-place {
+      color: silver;
+    }
   </style>
 </head>
 <body>
@@ -114,7 +122,7 @@
     }
     setInterval(createMoneyEffect, 300);
 
-    const sheetURL = "https://script.google.com/macros/s/AKfycbwbE8ffLzQcwvKDz410mEVV2Z1NuVezW0Wp84hs1rP7H15wedG0WPZF5s_KV46ofYtO/exec"; // ← Reemplaza aquí
+    const sheetURL = "https://script.google.com/macros/s/AKfycbwbE8ffLzQcwvKDz410mEVV2Z1NuVezW0Wp84hs1rP7H15wedG0WPZF5s_KV46ofYtO/exec";
 
     async function fetchRankings() {
       try {
@@ -136,8 +144,13 @@
       const rankingElement = document.getElementById(elementId);
       rankingElement.innerHTML = "";
       rankingData.sort((a, b) => b.sales - a.sales);
-      rankingData.forEach(entry => {
+
+      rankingData.forEach((entry, index) => {
         const li = document.createElement("li");
+
+        if (index === 0) li.classList.add("first-place");
+        if (index === 1) li.classList.add("second-place");
+
         li.innerHTML = `<span>${entry.name}</span><span>$ ${entry.sales.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>`;
         rankingElement.appendChild(li);
       });
