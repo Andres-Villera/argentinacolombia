@@ -8,61 +8,84 @@
     body {
       font-family: 'Poppins', sans-serif;
       background: url('wallstreet-bg.jpg') no-repeat center center/cover;
-      color: white;
-      text-align: center;
       margin: 0;
       padding: 0;
-      position: relative;
       min-height: 100vh;
+      color: white;
+      text-align: center;
+      position: relative;
     }
+
     .container {
       display: flex;
       justify-content: space-around;
       flex-wrap: wrap;
-      align-items: flex-start;
       padding: 20px;
-      margin-bottom: 120px;
     }
+
     .ranking-box {
       width: 40%;
       background: rgba(0, 0, 0, 0.85);
-      padding: 15px;
-      border-radius: 15px;
-      box-shadow: 0px 4px 15px rgba(255, 215, 0, 0.6);
-      margin-bottom: 20px;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0px 0px 20px rgba(255, 215, 0, 0.7);
+      margin: 10px;
     }
-    h1 {
+
+    .ranking-title {
       font-size: 2rem;
-      text-transform: uppercase;
       font-weight: bold;
       color: gold;
-      text-shadow: 4px 4px 10px rgba(255, 215, 0, 1);
-      margin: 0 0 10px;
+      text-shadow: 2px 2px 10px gold;
+      margin-bottom: 15px;
     }
-    .ranking-list {
+
+    ul.ranking-list {
       list-style: none;
       padding: 0;
       margin: 0;
     }
-    .ranking-list li {
-      font-size: 1.4rem;
-      font-weight: bold;
-      margin: 8px 0;
+
+    ul.ranking-list li {
       display: flex;
       justify-content: space-between;
-      padding: 8px;
-      border-radius: 5px;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.3rem;
+      border-radius: 10px;
+      padding: 10px 20px;
+      margin-bottom: 10px;
+      background: #ffffff11;
+      color: white;
     }
+
+    li.first {
+      background: gold;
+      color: black;
+    }
+
+    li.second {
+      background: silver;
+      color: black;
+    }
+
     .ranking-total {
       margin-top: 20px;
-      background: linear-gradient(90deg, #003300, #009933);
-      color: white;
-      font-size: 1.8rem;
-      padding: 12px;
-      border-radius: 15px;
+      padding: 15px 20px;
+      font-size: 1.6rem;
       font-weight: bold;
-      box-shadow: 0px 0px 10px rgba(0, 255, 0, 0.5);
+      border-radius: 15px;
+      background: black;
+      border-top: 5px solid gold;
+      color: white;
     }
+
+    .ranking-total::before {
+      content: "TOTAL";
+      font-weight: bold;
+      margin-right: 20px;
+    }
+
     .money-container {
       position: fixed;
       top: 0;
@@ -73,37 +96,38 @@
       overflow: hidden;
       z-index: 9999;
     }
+
     .money {
       position: absolute;
       width: 50px;
       animation: fall linear infinite;
       opacity: 0.8;
     }
-    @keyframes fall {
-      0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-    }
 
-    /* 🥇 Estilos para el top 1 y top 2 */
-    .first-place {
-      color: gold;
-    }
-    .second-place {
-      color: silver;
+    @keyframes fall {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="ranking-box">
-      <h1>🇨🇴 TEAM COLOMBIA 🇨🇴</h1>
+      <div class="ranking-title">🇨🇴 TEAM COLOMBIA 🇨🇴</div>
       <ul id="rankingColombia" class="ranking-list"></ul>
-      <div id="totalColombia" class="ranking-total">$ 0.00</div>
+      <div id="totalColombia" class="ranking-total">$ 0,00</div>
     </div>
+
     <div class="ranking-box">
-      <h1>🇦🇷 TEAM ARGENTINA 🇦🇷</h1>
+      <div class="ranking-title">🇦🇷 TEAM ARGENTINA 🇦🇷</div>
       <ul id="rankingArgentina" class="ranking-list"></ul>
-      <div id="totalArgentina" class="ranking-total">$ 0.00</div>
+      <div id="totalArgentina" class="ranking-total">$ 0,00</div>
     </div>
   </div>
 
@@ -112,7 +136,7 @@
   <script>
     function createMoneyEffect() {
       const moneyContainer = document.querySelector(".money-container");
-      let money = document.createElement("img");
+      const money = document.createElement("img");
       money.src = "money.png";
       money.className = "money";
       money.style.left = Math.random() * window.innerWidth + "px";
@@ -120,6 +144,7 @@
       moneyContainer.appendChild(money);
       setTimeout(() => money.remove(), 7000);
     }
+
     setInterval(createMoneyEffect, 300);
 
     const sheetURL = "https://script.google.com/macros/s/AKfycbwbE8ffLzQcwvKDz410mEVV2Z1NuVezW0Wp84hs1rP7H15wedG0WPZF5s_KV46ofYtO/exec";
@@ -131,10 +156,8 @@
 
         updateRanking('rankingColombia', data.rankingColombia);
         updateRanking('rankingArgentina', data.rankingArgentina);
-
         updateTotal('totalColombia', data.rankingColombia);
         updateTotal('totalArgentina', data.rankingArgentina);
-
       } catch (error) {
         console.error("Error al obtener datos:", error);
       }
@@ -143,23 +166,23 @@
     function updateRanking(elementId, rankingData) {
       const rankingElement = document.getElementById(elementId);
       rankingElement.innerHTML = "";
+
       rankingData.sort((a, b) => b.sales - a.sales);
 
       rankingData.forEach((entry, index) => {
         const li = document.createElement("li");
+        if (index === 0) li.classList.add("first");
+        if (index === 1) li.classList.add("second");
 
-        if (index === 0) li.classList.add("first-place");
-        if (index === 1) li.classList.add("second-place");
-
-        li.innerHTML = `<span>${entry.name}</span><span>$ ${entry.sales.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>`;
+        li.innerHTML = `<span>${entry.name}</span><span>$ ${entry.sales.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`;
         rankingElement.appendChild(li);
       });
     }
 
-    function updateTotal(totalElementId, data) {
+    function updateTotal(id, data) {
       const total = data.reduce((sum, e) => sum + (parseFloat(e.sales) || 0), 0);
       const formatted = total.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      document.getElementById(totalElementId).innerText = "$ " + formatted;
+      document.getElementById(id).innerText = "$ " + formatted;
     }
 
     setInterval(fetchRankings, 5000);
