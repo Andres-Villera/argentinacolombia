@@ -62,11 +62,13 @@
     li.first {
       background: gold;
       color: black;
+      font-size: 1.6rem;
     }
 
     li.second {
       background: silver;
       color: black;
+      font-size: 1.4rem;
     }
 
     .ranking-total {
@@ -172,7 +174,7 @@
       rankingData.forEach((entry, index) => {
         const li = document.createElement("li");
         if (index === 0) li.classList.add("first");
-        if (index === 1) li.classList.add("second");
+        else if (index === 1) li.classList.add("second");
 
         li.innerHTML = `<span>${entry.name}</span><span>$ ${entry.sales.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`;
         rankingElement.appendChild(li);
