@@ -1,155 +1,114 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ranking Colombia y Argentina</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ranking Equipos</title>
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
-      background: url('wallstreet-bg.jpg') no-repeat center center/cover;
-      color: white;
-      text-align: center;
       margin: 0;
       padding: 0;
-      position: relative;
-      min-height: 100vh;
+      background: url('wallstreet-bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      color: white;
+      overflow: hidden;
     }
     .container {
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      padding: 20px;
-      margin-bottom: 120px;
+      text-align: center;
+      margin-top: 40px;
+      position: relative;
+      z-index: 2;
     }
-    .ranking-box {
-      width: 40%;
-      background: rgba(0, 0, 0, 0.85);
-      padding: 15px;
-      border-radius: 15px;
-      box-shadow: 0px 4px 15px rgba(255, 215, 0, 0.6);
-      margin-bottom: 20px;
+    .team-box {
+      display: inline-block;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 15px 30px;
+      border-radius: 20px;
+      margin: 20px;
+      box-shadow: 0 0 20px #000;
     }
-    h1 {
-      font-size: 2rem;
-      text-transform: uppercase;
+    .team-title {
+      font-size: 28px;
       font-weight: bold;
-      color: gold;
-      text-shadow: 4px 4px 10px rgba(255, 215, 0, 1);
-      margin: 0 0 10px;
+      background: linear-gradient(to right, yellow, white);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    .ranking-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .ranking-list li {
-      font-size: 1.2rem;
-      font-weight: bold;
-      margin: 8px 0;
-      display: flex;
-      justify-content: space-between;
-      padding: 8px;
-      border-radius: 5px;
-    }
-    .ranking-total {
-      margin-top: 20px;
-      background: linear-gradient(90deg, #003300, #009933);
-      color: white;
-      font-size: 1.8rem;
-      padding: 12px;
-      border-radius: 15px;
-      font-weight: bold;
-      box-shadow: 0px 0px 10px rgba(0, 255, 0, 0.5);
-    }
-    .money-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 9999;
+    .total {
+      margin-top: 10px;
+      font-size: 24px;
+      background: green;
+      border-radius: 25px;
+      padding: 10px;
     }
     .money {
       position: absolute;
-      width: 50px;
+      width: 40px;
       animation: fall linear infinite;
-      opacity: 0.8;
     }
     @keyframes fall {
-      0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+      0% {
+        top: -50px;
+        opacity: 1;
+        transform: rotate(0deg);
+      }
+      100% {
+        top: 100vh;
+        opacity: 0;
+        transform: rotate(360deg);
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="ranking-box">
-      <h1>🇨🇴 TEAM COLOMBIA 🇨🇴</h1>
-      <ul id="rankingColombia" class="ranking-list"></ul>
-      <div id="totalColombia" class="ranking-total">$ 0.00</div>
+    <div class="team-box">
+      <div class="team-title">🇨🇴 TEAM COLOMBIA 🇨🇴</div>
+      <div class="total" id="colombiaTotal">$ 0.00</div>
     </div>
-    <div class="ranking-box">
-      <h1>🇦🇷 TEAM ARGENTINA 🇦🇷</h1>
-      <ul id="rankingArgentina" class="ranking-list"></ul>
-      <div id="totalArgentina" class="ranking-total">$ 0.00</div>
+    <div class="team-box">
+      <div class="team-title">🇦🇷 TEAM ARGENTINA 🇦🇷</div>
+      <div class="total" id="argentinaTotal">$ 0.00</div>
     </div>
   </div>
 
-  <div class="money-container"></div>
-
   <script>
-    function createMoneyEffect() {
-      const moneyContainer = document.querySelector(".money-container");
-      let money = document.createElement("img");
-      money.src = "money.png";
-      money.className = "money";
-      money.style.left = Math.random() * window.innerWidth + "px";
-      money.style.animationDuration = (Math.random() * 5 + 3) + "s";
-      moneyContainer.appendChild(money);
-      setTimeout(() => money.remove(), 7000);
-    }
-    setInterval(createMoneyEffect, 300);
+    const sheetURL = "https://script.google.com/macros/s/AKfycbzQZ-nWO5fdrPjdR3y0XWptz9O56BovO9WHS57dvBvKhhXql9JrdG7Ej5bOnWObPAIF/exec";
 
-    const sheetURL = "https://script.google.com/macros/s/AKfycbzQZ-nWO5fdrPjdR3yOXWptz9O56BovO9WH5S7dvBvKhhXql9JrdG7Ej5bOnWObPAlF/exec"; // ← Reemplaza aquí
-
-    async function fetchRankings() {
+    async function fetchData() {
       try {
-        const response = await fetch(sheetURL);
-        const data = await response.json();
+        const res = await fetch(sheetURL);
+        const data = await res.json();
 
-        updateRanking('rankingColombia', data.rankingColombia);
-        updateRanking('rankingArgentina', data.rankingArgentina);
+        const totalColombia = data.rankingColombia.reduce((acc, p) => acc + p.sales, 0);
+        const totalArgentina = data.rankingArgentina.reduce((acc, p) => acc + p.sales, 0);
 
-        updateTotal('totalColombia', data.rankingColombia);
-        updateTotal('totalArgentina', data.rankingArgentina);
-
-      } catch (error) {
-        console.error("Error al obtener datos:", error);
+        document.getElementById("colombiaTotal").textContent = "$ " + totalColombia.toFixed(2);
+        document.getElementById("argentinaTotal").textContent = "$ " + totalArgentina.toFixed(2);
+      } catch (e) {
+        console.error("Error al cargar los datos", e);
       }
     }
 
-    function updateRanking(elementId, rankingData) {
-      const rankingElement = document.getElementById(elementId);
-      rankingElement.innerHTML = "";
-      rankingData.sort((a, b) => b.sales - a.sales);
-      rankingData.forEach(entry => {
-        const li = document.createElement("li");
-        li.innerHTML = `<span>${entry.name}</span><span>$ ${entry.sales.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>`;
-        rankingElement.appendChild(li);
-      });
-    }
+    fetchData();
+    setInterval(fetchData, 10000); // cada 10 segundos
 
-    function updateTotal(totalElementId, data) {
-      const total = data.reduce((sum, e) => sum + (parseFloat(e.sales) || 0), 0);
-      const formatted = total.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      document.getElementById(totalElementId).innerText = "$ " + formatted;
-    }
+    // Billetes
+    function createMoney() {
+      const money = document.createElement("img");
+      money.src = "money.png";
+      money.classList.add("money");
+      money.style.left = Math.random() * 100 + "vw";
+      money.style.animationDuration = 3 + Math.random() * 2 + "s";
+      document.body.appendChild(money);
 
-    setInterval(fetchRankings, 5000);
+      setTimeout(() => {
+        money.remove();
+      }, 5000);
+    }
+    setInterval(createMoney, 300);
   </script>
 </body>
 </html>
