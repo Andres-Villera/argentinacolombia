@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ranking Colombia y Argentina</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: url('wallstreet-bg.jpg') no-repeat center center/cover;
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      position: relative;
+      min-height: 100vh;
+    }
+    .container {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      padding: 20px;
+      margin-bottom: 120px;
+    }
+    .ranking-box {
+      width: 40%;
+      background: rgba(0, 0, 0, 0.85);
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0px 4px 15px rgba(255, 215, 0, 0.6);
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 2rem;
+      text-transform: uppercase;
+      font-weight: bold;
+      color: gold;
+      text-shadow: 4px 4px 10px rgba(255, 215, 0, 1);
+      margin: 0 0 10px;
+    }
+    .ranking-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .ranking-list li {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: 8px 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 8px;
+      border-radius: 5px;
+    }
+    .ranking-total {
+      margin-top: 20px;
+      background: linear-gradient(90deg, #003300, #009933);
+      color: white;
+      font-size: 1.8rem;
+      padding: 12px;
+      border-radius: 15px;
+      font-weight: bold;
+      box-shadow: 0px 0px 10px rgba(0, 255, 0, 0.5);
+    }
+    .money-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 9999;
+    }
+    .money {
+      position: absolute;
+      width: 50px;
+      animation: fall linear infinite;
+      opacity: 0.8;
+    }
+    @keyframes fall {
+      0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="ranking-box">
+      <h1>🇨🇴 TEAM COLOMBIA 🇨🇴</h1>
+      <ul id="rankingColombia" class="ranking-list"></ul>
+      <div id="totalColombia" class="ranking-total">$ 0.00</div>
+    </div>
+    <div class="ranking-box">
+      <h1>🇦🇷 TEAM ARGENTINA 🇦🇷</h1>
+      <ul id="rankingArgentina" class="ranking-list"></ul>
+      <div id="totalArgentina" class="ranking-total">$ 0.00</div>
+    </div>
+  </div>
+
+  <div class="money-container"></div>
+
+  <script>
+    function createMoneyEffect() {
+      const moneyContainer = document.querySelector(".money-container");
+      let money = document.createElement("img");
+      money.src = "money.png";
+      money.className = "money";
+      money.style.left = Math.random() * window.innerWidth + "px";
+      money.style.animationDuration = (Math.random() * 5 + 3) + "s";
+      moneyContainer.appendChild(money);
+      setTimeout(() => money.remove(), 7000);
+    }
+    setInterval(createMoneyEffect, 300);
+
+    const sheetURL = "https://script.google.com/macros/s/AKfycbzQZ-nWO5fdrPjdR3yOXWptz9O56BovO9WH5S7dvBvKhhXql9JrdG7Ej5bOnWObPAlF/exec"; // ← Reemplaza aquí
+
+    async function fetchRankings() {
+      try {
+        const response = await fetch(sheetURL);
+        const data = await response.json();
+
+        updateRanking('rankingColombia', data.rankingColombia);
+        updateRanking('rankingArgentina', data.rankingArgentina);
+
+        updateTotal('totalColombia', data.rankingColombia);
+        updateTotal('totalArgentina', data.rankingArgentina);
+
+      } catch (error) {
+        console.error("Error al obtener datos:", error);
+      }
+    }
+
+    function updateRanking(elementId, rankingData) {
+      const rankingElement = document.getElementById(elementId);
+      rankingElement.innerHTML = "";
+      rankingData.sort((a, b) => b.sales - a.sales);
+      rankingData.forEach(entry => {
+        const li = document.createElement("li");
+        li.innerHTML = `<span>${entry.name}</span><span>$ ${entry.sales.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>`;
+        rankingElement.appendChild(li);
+      });
+    }
+
+    function updateTotal(totalElementId, data) {
+      const total = data.reduce((sum, e) => sum + (parseFloat(e.sales) || 0), 0);
+      const formatted = total.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById(totalElementId).innerText = "$ " + formatted;
+    }
+
+    setInterval(fetchRankings, 5000);
+  </script>
+</body>
+</html>
